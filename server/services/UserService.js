@@ -29,7 +29,7 @@ _schema.methods.validatePassword = function (password) {
 
 export default class UserService {
     get repository() {
-        return mongoose.model('User', _schema)
+        return mongoose.model('user', _schema)
     }
     generateHash(password) {
         return bcrypt.hashSync(password, SALT)

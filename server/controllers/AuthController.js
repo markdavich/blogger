@@ -33,6 +33,7 @@ export default class AuthController {
             delete user._doc.hash
             //SET THE SESSION UID (SHORT FOR USERID)
             req.session.uid = user._id
+            req.session.uname = user.name
             res.status(201).send(user)
         }
         catch (err) {
@@ -54,6 +55,7 @@ export default class AuthController {
             //ALWAYS REMOVE THE PASSWORD FROM THE USER OBJECT
             delete user._doc.hash
             req.session.uid = user._id
+            req.session.uname = user.name
             res.send(user)
         }
         catch (err) {
