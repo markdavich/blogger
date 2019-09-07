@@ -15,12 +15,12 @@ export default class BlogController {
             //NOTE all routes after the authenticate method will require the user to be logged in to access
             .get('', this.getAll)
             .get('/:id', this.getById)
-            .get('/:id/comments', this.getCommentsForThisBlog)
-            .use(Authorize.authenticated)
-            .post('', this.create)
 
             // http://localhost:3000/api/blogs/5d733a428650f93ff0f5ab65/comments
+            .get('/:id/comments', this.getCommentsForThisBlog)
 
+            .use(Authorize.authenticated)
+            .post('', this.create)
             .put('/:id', this.edit)
             .delete('/:id', this.delete)
     }
@@ -42,8 +42,8 @@ export default class BlogController {
         console.log('BlogController.getById()')
         try {
             let data = await _blogService.findById(req.params.id)
-                .populate('authorId', '_id')
-                .populate('authorId', 'name')
+                // .populate('authorId', '_id')
+                // .populate('authorId', 'name')
 
             if (!data) {
                 throw new Error("Invalid Id")
@@ -85,6 +85,7 @@ export default class BlogController {
     }
 
     async getCommentsForThisBlog(request, response, next) {
+        console.log('BlogController.getCommentsFoThisBlog()')
         try {
 
             let comments = await _commentService.find(
@@ -94,11 +95,12 @@ export default class BlogController {
             )
 
             if (comments) {
-                response.send(comments)
+                return response.send(comments)
             } else {
-                response.send('No Comments for this Blog')
+                return response.status(402).send('No Comments for this Blog')
             }
         } catch (error) {
+            console.log('ERROR: BlogController.getCommentsFoThisBlog()')
             next(error)
         }
 
@@ -122,7 +124,12 @@ export default class BlogController {
             if (data) {
                 return res.send(data)
             }
-            throw new Error("invalid id")
+            
+            return res.status(400).send(`
+                Node Server: BlogController.edit()
+                Wrong blogId or authorId in request.body
+
+            `)
         } catch (error) {
             console.log('ERROR: BlogController.edit()')
             next(error)
@@ -138,6 +145,5 @@ export default class BlogController {
             console.log('ERROR: BlogController.delete()')
             next(error)
         }
-
     }
 }
