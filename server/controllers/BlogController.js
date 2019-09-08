@@ -29,6 +29,8 @@ export default class BlogController {
         console.log('BlogController.getAll()')
         try {
             let data = await _blogService.find({})
+                // .populate('authorId', '_id')
+                // .populate('authorId', 'name')
 
             return res.send(data)
         } catch (error) {
@@ -110,9 +112,7 @@ export default class BlogController {
         console.log('BlogController.edit()')
         try {
             let blog = setAuthor(req).body
-            if (blog.img) {
-                blog.image = ''
-            }
+
             let data = await _blogService.findOneAndUpdate(
                 {
                     _id: req.params.id,
